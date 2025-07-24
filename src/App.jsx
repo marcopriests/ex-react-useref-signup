@@ -1,4 +1,4 @@
-import { useMemo, useState, useRef } from "react"
+import { useMemo, useState, useRef, useEffect } from "react"
 
 function App() {
   // campi controllati
@@ -10,6 +10,7 @@ function App() {
   const nameRef = useRef();
   const specializzazioneRef = useRef();
   const esperienzaRef = useRef();
+  const formRef = useRef();
 
   const letters = "abcdefghijklmnopqrstuvwxyz";
   const numbers = "0123456789";
@@ -35,6 +36,10 @@ function App() {
   const isDescriptionValid = useMemo(() => {
     return description.trim().length >= 100 && description.trim().length <= 1000;
   }, [description])
+
+  useEffect(() => {
+    nameRef.current.focus();
+  }, [])
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -71,9 +76,20 @@ function App() {
     });
   };
 
+  const handleReset = (e) => {
+    e.preventDefault();
+    setUsername('');
+    setPassword('');
+    setDescription('');
+    nameRef.current.value = '';
+    specializzazioneRef.current.value = '';
+    esperienzaRef.current.value = ''
+    nameRef.current.focus();
+  }
+
   return (
     <>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} ref={formRef}>
         {/* name */}
         <label>Nome completo</label>
         <input
@@ -148,7 +164,10 @@ function App() {
         )}
 
         <button type="submit">Submit</button>
+        <button type="" onClick={handleReset}>Reset</button>
       </form>
+      <div className="blocco"></div>
+      <button onClick={() => formRef.current.scrollIntoView({ behavior: 'smooth' })}>Vai al form</button>
     </>
   )
 }

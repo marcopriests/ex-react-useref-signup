@@ -14,7 +14,7 @@ textarea {
     width: 400px;
 }
 
-.error {
-    color: red;
-    margin-left: 20px;
+.blocco {
+    height: 200vh;
+    background-color: grey;
 }
