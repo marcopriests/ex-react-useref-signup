@@ -1,0 +1,15 @@
+body {
+    padding: 50px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+input,
+select,
+textarea {
+    display: block;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 10px;
+    border: 1px solid;
+    width: 400px;
+}
