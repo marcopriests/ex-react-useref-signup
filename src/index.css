@@ -13,3 +13,8 @@ textarea {
     border: 1px solid;
     width: 400px;
 }
+
+.error {
+    color: red;
+    margin-left: 20px;
+}

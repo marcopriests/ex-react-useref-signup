@@ -1,33 +1,74 @@
-import { useState } from "react"
+import { useMemo, useState, useRef } from "react"
 
 function App() {
-  const formInitialData = {
-    name: '',
-    username: '',
-    password: '',
-    specializzazione: '',
-    esperienza: '',
-    description: ''
-  };
+  // campi controllati
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [description, setDescription] = useState('');
 
-  const [formData, setFormData] = useState(formInitialData);
+  // campi non controllati
+  const nameRef = useRef();
+  const specializzazioneRef = useRef();
+  const esperienzaRef = useRef();
 
-  const handleChange = (e) => {
-    const value = e.target.value;
-    setFormData({
-      ...formData,
-      [e.target.name]: value
-    });
-  };
+  const letters = "abcdefghijklmnopqrstuvwxyz";
+  const numbers = "0123456789";
+  const symbols = "!@#$%^&*()-_=+[]{}|;:'\\\",.<>?/`~";
+
+  const isUsernameValid = useMemo(() => {
+    const charValid = [...username].every(char =>
+      letters.includes(char.toLowerCase()) ||
+      numbers.includes(char));
+
+    return charValid && username.trim().length >= 6;
+  }, [username]);
+
+  const isPasswordValid = useMemo(() => {
+    return (
+      password.trim().length >= 8 &&
+      password.split('').some(char => letters.includes(char.toLowerCase())) &&
+      password.split('').some(char => symbols.includes(char)) &&
+      password.split('').some(char => numbers.includes(char))
+    );
+  }, [password])
+
+  const isDescriptionValid = useMemo(() => {
+    return description.trim().length >= 100 && description.trim().length <= 1000;
+  }, [description])
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Stampo i dati
-    console.log('Hai submittato!', formData);
+    const name = nameRef.current.value;
+    const specializzazione = specializzazioneRef.current.value;
+    const esperienza = esperienzaRef.current.value
 
-    // resetto i campi del form
-    setFormData(formInitialData);
+    // effettuo i controlli
+    if (
+      !name.trim() ||
+      !username.trim() ||
+      !password.trim() ||
+      !specializzazione.trim() ||
+      !esperienza.trim() ||
+      esperienza < 0 ||
+      !description.trim() ||
+      !isUsernameValid ||
+      !isPasswordValid ||
+      !isDescriptionValid
+    ) {
+      console.error('Errore: compilare tutti i campi del form.')
+      return;
+    }
+
+    // Stampo i dati
+    console.log('Hai submittato: ', {
+      name,
+      username,
+      password,
+      specializzazione,
+      esperienza,
+      description
+    });
   };
 
   return (
@@ -39,9 +80,7 @@ function App() {
           type="text"
           name="name"
           placeholder="Inserisci il tuo nome completo..."
-          value={formData.name}
-          onChange={handleChange}
-          required
+          ref={nameRef}
         />
 
         {/* username */}
@@ -50,10 +89,14 @@ function App() {
           type="text"
           name="username"
           placeholder="Inserisci il tuo username..."
-          value={formData.username}
-          onChange={handleChange}
-          required
+          value={username}
+          onChange={e => setUsername(e.target.value)}
         />
+        {username.trim() && (
+          <p style={{ color: isUsernameValid ? 'green' : 'red' }}>
+            {isUsernameValid ? 'Username valido' : 'Deve contenere almeno 6 caratteri alfanumerici'}
+          </p>
+        )}
 
         {/* password */}
         <label>Password</label>
@@ -61,18 +104,20 @@ function App() {
           type="password"
           name="password"
           placeholder="Inserisci la password..."
-          value={formData.password}
-          onChange={handleChange}
-          required
+          value={password}
+          onChange={e => setPassword(e.target.value)}
         />
+        {password.trim() && (
+          <p style={{ color: isPasswordValid ? 'green' : 'red' }}>
+            {isPasswordValid ? 'Password valido' : 'Deve contenere almeno 8 caratteri di cui almeno 1 lettera, 1 numero e 1 simbolo speciale'}
+          </p>
+        )}
 
         {/* specializzazione */}
         <label>Specializzazione</label>
         <select
           name="specializzazione"
-          value={formData.specializzazione}
-          onChange={handleChange}
-          required
+          ref={specializzazioneRef}
         >
           <option value='' default>Seleziona la tua specializzazione</option>
           <option value="Full Stack" >Full Stack</option>
@@ -85,10 +130,7 @@ function App() {
         <input
           type="number"
           name="esperienza"
-          min={0}
-          value={formData.esperienza}
-          onChange={handleChange}
-          required
+          ref={esperienzaRef}
         />
 
         {/* description */}
@@ -96,10 +138,14 @@ function App() {
         <textarea
           name="description"
           placeholder="Inserisci una breve descrizione..."
-          value={formData.description}
-          onChange={handleChange}
-          required
+          value={description}
+          onChange={e => setDescription(e.target.value)}
         />
+        {description.trim() && (
+          <p style={{ color: isDescriptionValid ? 'green' : 'red' }}>
+            {isDescriptionValid ? 'Descrizione valida' : 'Deve contenere tra i 100 e i 1000 caratteri. (' + description.trim().length + ')'}
+          </p>
+        )}
 
         <button type="submit">Submit</button>
       </form>
